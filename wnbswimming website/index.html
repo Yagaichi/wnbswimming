@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WNB Swimming - Klub Renang Terbaik</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      }
+
+      .fade-in {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease forwards;
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .nav-link {
+        position: relative;
+      }
+
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #667eea;
+        transition: width 0.3s ease;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      .nav-link.active {
+        color: #667eea;
+      }
+
+      .nav-link.active::after {
+        width: 100%;
+      }
+
+      #navbar.scrolled {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: all 0.3s ease;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+      }
+
+      .section-title {
+        position: relative;
+        display: inline-block;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+      }
+
+      .program-card {
+        min-height: 450px;
+        perspective: 1000px;
+      }
+
+      .flip-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+      }
+
+      .program-card.flipped .flip-card-inner {
+        transform: rotateY(180deg);
+      }
+
+      .flip-card-front,
+      .flip-card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: 12px;
+      }
+
+      .flip-card-back {
+        transform: rotateY(180deg);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+
+      .gallery-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        cursor: pointer;
+        aspect-ratio: 1;
+        transition: transform 0.3s ease;
+      }
+
+      .gallery-item:hover {
+        transform: scale(1.05);
+      }
+
+      .gallery-item img,
+      .gallery-item video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .gallery-item .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        padding: 20px;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      .gallery-item:hover .overlay {
+        transform: translateY(0);
+      }
+
+      .play-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 4rem;
+        color: white;
+        opacity: 0.9;
+        pointer-events: none;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        padding-top: 60px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.95);
+      }
+
+      .modal-content {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 80vh;
+        object-fit: contain;
+        animation: zoomIn 0.3s ease;
+      }
+
+      .modal-video-container {
+        display: none;
+        margin: auto;
+        width: 90%;
+        max-width: 1200px;
+        animation: zoomIn 0.3s ease;
+      }
+
+      .modal-video-container video {
+        width: 100%;
+        height: auto;
+        max-height: 80vh;
+        background: #000;
+        border-radius: 8px;
+      }
+
+      @keyframes zoomIn {
+        from {
+          transform: scale(0.8);
+        }
+        to {
+          transform: scale(1);
+        }
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        z-index: 10000;
+      }
+
+      .modal-close:hover,
+      .modal-close:focus {
+        color: #bbb;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full bg-white shadow-md z-50 transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="text-2xl font-bold text-gray-800">
+            <i class="fas fa-swimming-pool text-blue-600 mr-2"></i>
+            WNB Swimming
+          </div>
+          <div id="desktop-menu" class="hidden md:flex space-x-8">
+            <a href="#beranda" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Beranda</a>
+            <a href="#tentang" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Tentang</a>
+            <a href="#program" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Program</a>
+            <a href="#galeri" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Galeri</a>
+            <a href="#kontak" class="nav-link text-gray-700 hover:text-blue-600 font-medium">Kontak</a>
+          </div>
+          <button id="mobile-menu-button" class="md:hidden text-gray-700 focus:outline-none">
+            <i id="menu-icon" class="fas fa-bars text-2xl"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+        <div class="px-4 py-3 space-y-3">
+          <a href="#beranda" class="block text-gray-700 hover:text-blue-600 font-medium py-2 border-b border-gray-100">Beranda</a>
+          <a href="#tentang" class="block text-gray-700 hover:text-blue-600 font-medium py-2 border-b border-gray-100">Tentang</a>
+          <a href="#program" class="block text-gray-700 hover:text-blue-600 font-medium py-2 border-b border-gray-100">Program</a>
+          <a href="#galeri" class="block text-gray-700 hover:text-blue-600 font-medium py-2 border-b border-gray-100">Galeri</a>
+          <a href="#kontak" class="block text-gray-700 hover:text-blue-600 font-medium py-2">Kontak</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="beranda" class="gradient-bg pt-24 pb-20">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center text-white">
+          <div class="fade-in mb-6">
+            <i class="fas fa-swimmer text-6xl mb-4"></i>
+          </div>
+          <h1 class="text-4xl md:text-6xl font-bold mb-6 fade-in">Selamat Datang di WNB Swimming</h1>
+          <p class="text-xl mb-8 max-w-2xl mx-auto fade-in opacity-90">Klub renang terbaik dengan fasilitas modern dan pelatih berpengalaman</p>
+          <div class="fade-in">
+            <a href="#program" class="btn-primary text-white px-8 py-3 rounded-full font-semibold inline-block"> Daftar Sekarang </a>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-8 mt-16 text-center text-white fade-in">
+          <div>
+            <div class="text-4xl font-bold mb-2">60+</div>
+            <div class="text-sm opacity-90">Member Aktif</div>
+          </div>
+          <div>
+            <div class="text-4xl font-bold mb-2">4+</div>
+            <div class="text-sm opacity-90">Pelatih Profesional</div>
+          </div>
+          <div>
+            <div class="text-4xl font-bold mb-2">5+</div>
+            <div class="text-sm opacity-90">Tahun Pengalaman</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tentang Section -->
+    <section id="tentang" class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="section-title text-3xl md:text-4xl font-bold text-gray-800 mb-4">Tentang Kami</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">Berpengalaman melatih perenang dari berbagai usia dan tingkat kemampuan</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="text-center p-6 card-hover bg-white rounded-xl shadow-lg">
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-child text-3xl text-blue-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">Untuk Semua Usia</h3>
+            <p class="text-gray-600">Melayani anak-anak hingga dewasa dengan program yang sesuai</p>
+          </div>
+
+          <div class="text-center p-6 card-hover bg-white rounded-xl shadow-lg">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-users text-3xl text-green-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">Pelatih Profesional</h3>
+            <p class="text-gray-600">Tim pelatih yang berpengalaman</p>
+          </div>
+
+          <div class="text-center p-6 card-hover bg-white rounded-xl shadow-lg">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="fas fa-swimming-pool text-3xl text-purple-600"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">Fasilitas Lengkap</h3>
+            <p class="text-gray-600">Kolam renang dengan standar yang baik dan nyaman</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Program Section -->
+    <section id="program" class="py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="section-title text-3xl md:text-4xl font-bold text-gray-800 mb-4">Program Pelatihan</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">Pilihan program yang disesuaikan dengan usia dan tingkat kemampuan</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <!-- Program 1 - Reguler -->
+          <div class="program-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+              <div class="flip-card-front bg-white rounded-xl shadow-lg overflow-hidden card-hover cursor-pointer">
+                <div class="h-32 bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+                  <i class="fas fa-users text-5xl text-white"></i>
+                </div>
+                <div class="p-6">
+                  <h3 class="text-xl font-bold text-gray-800 mb-2">Reguler</h3>
+                  <p class="text-gray-600 text-sm mb-4">Program kelompok dengan kelas mingguan</p>
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-sm text-gray-600">
+                      <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                      4x pertemuan (1x/minggu)
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600">
+                      <i class="fas fa-clock text-blue-500 mr-2"></i>
+                      60 menit (45 menit jika &lt;5 anak)
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600">
+                      <i class="fas fa-users text-blue-500 mr-2"></i>
+                      Max 5 anak
+                    </div>
+                  </div>
+                  <div class="text-2xl font-bold text-blue-600 mb-4">Hubungi Kami</div>
+                  <div class="text-center text-sm text-gray-500 italic">
+                    <i class="fas fa-hand-pointer mr-1"></i>
+                    Klik untuk info detail
+                  </div>
+                </div>
+              </div>
+              <div class="flip-card-back">
+                <div class="flex-1">
+                  <h3 class="text-xl font-bold mb-4 text-center">Instruksi Program Reguler</h3>
+                  <div class="space-y-3 text-sm">
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>4 kali pertemuan dalam sebulan</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Jadwal 1 kali per minggu</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Durasi 60 menit untuk kelas penuh (5 anak)</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Durasi 45 menit jika peserta kurang dari 5 anak</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Maksimal 5 anak per kelas</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Pembelajaran teknik dasar hingga menengah</p>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="event.stopPropagation(); openWhatsApp('Program Reguler')" class="w-full bg-white text-blue-600 py-2 rounded-lg font-semibold hover:bg-gray-100 transition mt-4">Daftar Program Ini</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Program 2 - Semi Private -->
+          <div class="program-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+              <div class="flip-card-front bg-white rounded-xl shadow-lg overflow-hidden card-hover cursor-pointer">
+                <div class="h-32 bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                  <i class="fas fa-user-friends text-5xl text-white"></i>
+                </div>
+                <div class="p-6">
+                  <h3 class="text-xl font-bold text-gray-800 mb-2">Semi Private</h3>
+                  <p class="text-gray-600 text-sm mb-4">Kelas kecil dengan perhatian lebih personal</p>
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-sm text-gray-600">
+                      <i class="fas fa-calendar text-green-500 mr-2"></i>
+                      4x pertemuan (1x/minggu)
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600">
+                      <i class="fas fa-clock text-green-500 mr-2"></i>
+                      60 menit
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600">
+                      <i class="fas fa-users text-green-500 mr-2"></i>
+                      Max 2 anak
+                    </div>
+                  </div>
+                  <div class="text-2xl font-bold text-green-600 mb-4">Hubungi Kami</div>
+                  <div class="text-center text-sm text-gray-500 italic">
+                    <i class="fas fa-hand-pointer mr-1"></i>
+                    Klik untuk info detail
+                  </div>
+                </div>
+              </div>
+              <div class="flip-card-back">
+                <div class="flex-1">
+                  <h3 class="text-xl font-bold mb-4 text-center">Instruksi Semi Private</h3>
+                  <div class="space-y-3 text-sm">
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>4 kali pertemuan dalam sebulan</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Jadwal 1 kali per minggu</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Durasi tetap 60 menit</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Maksimal 2 anak per kelas</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Perhatian lebih intensif dari pelatih</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Pembelajaran disesuaikan dengan kemampuan masing-masing</p>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="event.stopPropagation(); openWhatsApp('Program Semi Private')" class="w-full bg-white text-green-600 py-2 rounded-lg font-semibold hover:bg-gray-100 transition mt-4">Daftar Program Ini</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Program 3 - Private -->
+          <div class="program-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+              <div class="flip-card-front bg-white rounded-xl shadow-lg overflow-hidden card-hover cursor-pointer">
+                <div class="h-32 bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center">
+                  <i class="fas fa-user text-5xl text-white"></i>
+                </div>
+                <div class="p-6">
+                  <h3 class="text-xl font-bold text-gray-800 mb-2">Private</h3>
+                  <p class="text-gray-600 text-sm mb-4">Pelatihan eksklusif one-on-one</p>
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-sm text-gray-600">
+                      <i class="fas fa-calendar text-purple-500 mr-2"></i>
+                      4x pertemuan (1x/minggu)
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600">
+                      <i class="fas fa-clock text-purple-500 mr-2"></i>
+                      60 menit
+                    </div>
+                    <div class="flex items-center text-sm text-gray-600">
+                      <i class="fas fa-user text-purple-500 mr-2"></i>
+                      Max 1 anak
+                    </div>
+                  </div>
+                  <div class="text-2xl font-bold text-purple-600 mb-4">Hubungi Kami</div>
+                  <div class="text-center text-sm text-gray-500 italic">
+                    <i class="fas fa-hand-pointer mr-1"></i>
+                    Klik untuk info detail
+                  </div>
+                </div>
+              </div>
+              <div class="flip-card-back">
+                <div class="flex-1">
+                  <h3 class="text-xl font-bold mb-4 text-center">Instruksi Program Private</h3>
+                  <div class="space-y-3 text-sm">
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>4 kali pertemuan dalam sebulan</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Jadwal 1 kali per minggu</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Durasi tetap 60 menit</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Hanya 1 anak per sesi (eksklusif)</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Perhatian penuh dari pelatih 100%</p>
+                    </div>
+                    <div class="flex items-start">
+                      <i class="fas fa-check-circle mr-2 mt-1 flex-shrink-0"></i>
+                      <p>Program disesuaikan sepenuhnya dengan kebutuhan individu</p>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="event.stopPropagation(); openWhatsApp('Program Private')" class="w-full bg-white text-purple-600 py-2 rounded-lg font-semibold hover:bg-gray-100 transition mt-4">Daftar Program Ini</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Galeri Section -->
+    <section id="galeri" class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="section-title text-3xl md:text-4xl font-bold text-gray-800 mb-4">Galeri Kami</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">Momen berharga bersama pelatih dan murid-murid kami</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex justify-center mb-8 flex-wrap gap-4">
+          <button onclick="filterGallery('all')" class="filter-btn px-6 py-2 rounded-full font-medium bg-gradient-to-r from-blue-500 to-purple-600 text-white">Semua</button>
+          <button onclick="filterGallery('pelatih')" class="filter-btn px-6 py-2 rounded-full font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">Pelatih</button>
+          <button onclick="filterGallery('murid')" class="filter-btn px-6 py-2 rounded-full font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">Murid</button>
+          <button onclick="filterGallery('kegiatan')" class="filter-btn px-6 py-2 rounded-full font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">Kegiatan</button>
+          <button onclick="filterGallery('video')" class="filter-btn px-6 py-2 rounded-full font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">Video</button>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <!-- Foto Items -->
+          <div class="gallery-item" data-category="pelatih" data-type="image" onclick="openModal(this)">
+            <img src="pelatihh.jpg" alt="Pelatih 1" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Tim Pelatih</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="murid" data-type="image" onclick="openModal(this)">
+            <img src="Murid.jpg" alt="Murid 1" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Latihan Anak-anak</p>
+            </div>
+          </div>
+
+          <!-- Video Items - Nama file yang BENAR -->
+          <div class="gallery-item" data-category="video" data-type="video" onclick="openModal(this)">
+            <video muted loop preload="metadata" playsinline>
+              <source src="Videooo.mp4" type="video/mp4" />
+            </video>
+            <i class="fas fa-play-circle play-icon"></i>
+            <div class="overlay">
+              <p class="text-white font-semibold">Tutorial Renang Gaya Bebas</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="kegiatan" data-type="image" onclick="openModal(this)">
+            <img src="Kegiatan.jpg" alt="Kegiatan 1" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Kompetisi Internal</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="kegiatan" data-type="image" onclick="openModal(this)">
+            <img src="Kegiatannnn.jpg" alt="Kegiatan 1" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Kompetisi Internal</p>
+            </div>
+          </div>
+
+          <!-- Video Items - Video kedua -->
+          <div class="gallery-item" data-category="video" data-type="video" onclick="openModal(this)">
+            <video muted loop preload="metadata" playsinline>
+              <source src="Videoo.mp4" type="video/mp4" />
+            </video>
+            <i class="fas fa-play-circle play-icon"></i>
+            <div class="overlay">
+              <p class="text-white font-semibold">Latihan Renang</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="pelatih" data-type="image" onclick="openModal(this)">
+            <img src="pelatih.jpg" alt="Pelatih 2" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Tim Pelatih</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="pelatih" data-type="image" onclick="openModal(this)">
+            <img src="pelatihhhh.jpg" alt="Pelatih 2" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Tim Pelatih</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="murid" data-type="image" onclick="openModal(this)">
+            <img src="Muridd.jpg" alt="Murid 2" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Sesi Latihan</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="kegiatan" data-type="image" onclick="openModal(this)">
+            <img src="Kegiatann.jpg" alt="Kegiatan 2" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Fun Swimming</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="murid" data-type="image" onclick="openModal(this)">
+            <img src="Muriddd.jpg" alt="Murid 3" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Prestasi Murid</p>
+            </div>
+          </div>
+
+          <div class="gallery-item" data-category="kegiatan" data-type="image" onclick="openModal(this)">
+            <img src="Kegiatannn.jpg" alt="Kegiatan 3" />
+            <div class="overlay">
+              <p class="text-white font-semibold">Event Tahunan</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-8">
+          <p class="text-gray-500 text-sm italic">
+            <i class="fas fa-camera mr-2"></i>
+            Klik foto/video untuk melihat lebih besar
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal untuk preview gambar dan video -->
+    <div id="imageModal" class="modal" onclick="closeModal(event)">
+      <span class="modal-close" onclick="closeModal(event)">&times;</span>
+      <img class="modal-content" id="modalImage" onclick="event.stopPropagation()" />
+      <div class="modal-video-container" id="modalVideoContainer" onclick="event.stopPropagation()">
+        <video id="modalVideo" controls>Browser Anda tidak mendukung video.</video>
+      </div>
+    </div>
+
+    <!-- Kontak Section -->
+    <section id="kontak" class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+          <h2 class="section-title text-3xl md:text-4xl font-bold text-gray-800 mb-4">Hubungi Kami</h2>
+          <p class="text-gray-600 max-w-2xl mx-auto">Siap memulai perjalanan renang Anda? Hubungi kami sekarang</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div class="space-y-4">
+            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+              <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fas fa-phone text-blue-600"></i>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-800">Telepon</div>
+                <div class="text-gray-600">+62 81932881339</div>
+              </div>
+            </div>
+
+            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+              <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fab fa-whatsapp text-green-600"></i>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-800">WhatsApp</div>
+                <div class="text-gray-600">+62 81932881339</div>
+              </div>
+            </div>
+
+            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+              <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                <i class="fas fa-envelope text-red-600"></i>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-800">Email</div>
+                <div class="text-gray-600">wnbswimming@gmail.com</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 p-6 rounded-lg">
+            <form class="space-y-4" id="contactForm">
+              <input type="text" placeholder="Nama Lengkap" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+              <input type="email" placeholder="Email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+              <input type="tel" placeholder="Nomor Telepon" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+              <textarea rows="4" placeholder="Pesan Anda" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+              <button type="submit" class="w-full btn-primary text-white py-3 rounded-lg font-semibold">Kirim Pesan</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-3 gap-8 mb-8">
+          <div>
+            <div class="text-xl font-bold mb-4">
+              <i class="fas fa-swimming-pool mr-2 text-blue-400"></i>
+              WNB Swimming
+            </div>
+            <p class="text-gray-400">Klub renang terbaik dengan fasilitas modern dan pelatih berpengalaman.</p>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Menu</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li><a href="#beranda" class="hover:text-white transition">Beranda</a></li>
+              <li><a href="#tentang" class="hover:text-white transition">Tentang</a></li>
+              <li><a href="#program" class="hover:text-white transition">Program</a></li>
+              <li><a href="#galeri" class="hover:text-white transition">Galeri</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Kontak</h4>
+            <div class="space-y-2 text-gray-400">
+              <div>Telepon: +62 81932881339</div>
+              <div>Email: wnbswimming@gmail.com</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-800 pt-8 text-center text-gray-400">
+          <p>&copy; 2025 Made by <a href="https://instagram.com/yagaichi.1" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 transition-colors">Yagaichi</a>. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Floating WhatsApp -->
+    <a href="https://wa.me/6281932881339" target="_blank" class="fixed bottom-6 right-6 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition z-50">
+      <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
+
+    <script>
+      // Navbar scroll effect
+      window.addEventListener("scroll", function () {
+        const navbar = document.getElementById("navbar");
+        if (window.scrollY > 50) {
+          navbar.classList.add("scrolled");
+        } else {
+          navbar.classList.remove("scrolled");
+        }
+      });
+
+      // Active link on scroll
+      const sections = document.querySelectorAll("section");
+      const navLinks = document.querySelectorAll(".nav-link");
+
+      window.addEventListener("scroll", function () {
+        let current = "";
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          if (window.scrollY >= sectionTop - 100) {
+            current = section.getAttribute("id");
+          }
+        });
+
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === `#${current}`) {
+            link.classList.add("active");
+          }
+        });
+      });
+
+      // Smooth scroll
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        });
+      });
+
+      // Mobile menu toggle
+      const mobileMenuButton = document.getElementById("mobile-menu-button");
+      const mobileMenu = document.getElementById("mobile-menu");
+      const menuIcon = document.getElementById("menu-icon");
+
+      mobileMenuButton.addEventListener("click", function () {
+        mobileMenu.classList.toggle("hidden");
+
+        // Toggle icon between bars and times (X)
+        if (mobileMenu.classList.contains("hidden")) {
+          menuIcon.classList.remove("fa-times");
+          menuIcon.classList.add("fa-bars");
+        } else {
+          menuIcon.classList.remove("fa-bars");
+          menuIcon.classList.add("fa-times");
+        }
+      });
+
+      // Close mobile menu when clicking a link
+      const mobileMenuLinks = mobileMenu.querySelectorAll("a");
+      mobileMenuLinks.forEach((link) => {
+        link.addEventListener("click", function () {
+          mobileMenu.classList.add("hidden");
+          menuIcon.classList.remove("fa-times");
+          menuIcon.classList.add("fa-bars");
+        });
+      });
+
+      // Form submission
+      document.getElementById("contactForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        alert("Terima kasih! Pesan Anda telah terkirim.");
+        this.reset();
+      });
+
+      // WhatsApp function
+      function openWhatsApp(program) {
+        const message = `Halo WNB Swimming, saya tertarik dengan program ${program}. Mohon informasi lebih lanjut.`;
+        window.open(`https://wa.me/6281952409456?text=${encodeURIComponent(message)}`, "_blank");
+      }
+
+      // Fade in animation on scroll
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
+
+      // Gallery filter function
+      function filterGallery(category) {
+        const items = document.querySelectorAll(".gallery-item");
+        const buttons = document.querySelectorAll(".filter-btn");
+
+        // Update button styles
+        buttons.forEach((btn) => {
+          btn.classList.remove("bg-gradient-to-r", "from-blue-500", "to-purple-600", "text-white");
+          btn.classList.add("bg-gray-200", "text-gray-700");
+        });
+
+        event.target.classList.remove("bg-gray-200", "text-gray-700");
+        event.target.classList.add("bg-gradient-to-r", "from-blue-500", "to-purple-600", "text-white");
+
+        // Filter items
+        items.forEach((item) => {
+          if (category === "all" || item.dataset.category === category) {
+            item.style.display = "block";
+            setTimeout(() => {
+              item.style.opacity = "1";
+              item.style.transform = "scale(1)";
+            }, 10);
+          } else {
+            item.style.opacity = "0";
+            item.style.transform = "scale(0.8)";
+            setTimeout(() => {
+              item.style.display = "none";
+            }, 300);
+          }
+        });
+      }
+
+      // Modal functions - FIX untuk file:// protocol
+      function openModal(element) {
+        const modal = document.getElementById("imageModal");
+        const modalImg = document.getElementById("modalImage");
+        const modalVideoContainer = document.getElementById("modalVideoContainer");
+        const type = element.getAttribute("data-type");
+
+        modal.style.display = "block";
+        document.body.style.overflow = "hidden";
+
+        if (type === "video") {
+          // Tampilkan video
+          modalImg.style.display = "none";
+          modalVideoContainer.style.display = "block";
+
+          // Ambil video element dari galeri
+          const galleryVideo = element.querySelector("video");
+          const videoSrc = galleryVideo.querySelector("source").src;
+
+          console.log("Loading video from:", videoSrc);
+
+          // Buat video baru dengan src yang sama
+          modalVideoContainer.innerHTML = `
+            <video controls playsinline preload="auto" 
+                   style="width: 100%; height: auto; max-height: 80vh; background: #000; border-radius: 8px;">
+              <source src="${videoSrc}" type="video/mp4">
+              Browser Anda tidak mendukung video.
+            </video>
+          `;
+
+          // Tunggu sebentar lalu coba play
+          setTimeout(() => {
+            const modalVid = modalVideoContainer.querySelector("video");
+            if (modalVid) {
+              modalVid.play().catch((e) => {
+                console.log("User needs to click play:", e.message);
+              });
+            }
+          }, 500);
+        } else {
+          // Tampilkan gambar
+          modalVideoContainer.style.display = "none";
+          modalImg.style.display = "block";
+          modalImg.src = element.querySelector("img").src;
+        }
+      }
+
+      function closeModal(event) {
+        if (event) event.stopPropagation();
+        const modal = document.getElementById("imageModal");
+        const modalVideoContainer = document.getElementById("modalVideoContainer");
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+
+        // Hapus semua video dari modal
+        modalVideoContainer.innerHTML = "";
+      }
+
+      // Close modal with Escape key
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeModal();
+        }
+      });
+    </script>
+  </body>
+</html>
