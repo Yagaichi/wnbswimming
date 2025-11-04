@@ -6,7 +6,7 @@
     <title>WNB Swimming - Klub Renang Terbaik</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="1.png">
+    <link rel="icon" type="image/png" href="1.png" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <style>
       body {
@@ -868,14 +868,27 @@
       // Form submission
       document.getElementById("contactForm").addEventListener("submit", function (e) {
         e.preventDefault();
-        alert("Terima kasih! Pesan Anda telah terkirim.");
+
+        // Ambil data dari form
+        const nama = this.querySelector('input[type="text"]').value;
+        const email = this.querySelector('input[type="email"]').value;
+        const telepon = this.querySelector('input[type="tel"]').value;
+        const pesan = this.querySelector("textarea").value;
+
+        // Format pesan WhatsApp
+        const message = `*Pesan dari Website WNB Swimming*\n\n` + `Nama: ${nama}\n` + `Email: ${email}\n` + `Telepon: ${telepon}\n` + `Pesan: ${pesan}`;
+
+        // Buka WhatsApp
+        window.open(`https://wa.me/6281932881339?text=${encodeURIComponent(message)}`, "_blank");
+
+        // Reset form
         this.reset();
       });
 
       // WhatsApp function
       function openWhatsApp(program) {
         const message = `Halo WNB Swimming, saya tertarik dengan program ${program}. Mohon informasi lebih lanjut.`;
-        window.open(`https://wa.me/6281952409456?text=${encodeURIComponent(message)}`, "_blank");
+        window.open(`https://wa.me/6281932881339?text=${encodeURIComponent(message)}`, "_blank");
       }
 
       // Fade in animation on scroll
